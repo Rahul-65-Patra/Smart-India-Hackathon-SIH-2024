@@ -31,18 +31,18 @@ const bedSchema = new mongoose.Schema({
 const Patient = mongoose.model('Patient', patientSchema);
 const Bed = mongoose.model('Bed', bedSchema);
 
-// Initialize or update bed data to 300 beds
+// Initialize or update bed data to 400 beds
 const initializeBedData = async () => {
   try {
     const bedData = await Bed.findOne({});
     if (bedData) {   
       bedData.bedsAvailable = 400; // Update the bed count to 300
       await bedData.save();
-      console.log('Bed data updated to 300 beds');
+      console.log('Bed data updated to 400 beds');
     } else {
       const newBedData = new Bed({ bedsAvailable: 400 }); // Initialize with 300 beds
       await newBedData.save();
-      console.log('Bed data initialized with 300 beds');
+      console.log('Bed data initialized with 400 beds');
     }
   } catch (error) {
     console.error('Error initializing/updating bed data:', error);
