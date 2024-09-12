@@ -22,7 +22,7 @@ const App = () => {
 
   const fetchBedData = async () => {
     try {
-      const response = await axios.get('/api/beds');
+      const response = await axios.get('http://localhost:5000/api/beds'); // Added 'http://'
       if (response.data && response.data.bedsAvailable != null) {
         setBeds(response.data.bedsAvailable);
       } else {
@@ -37,7 +37,7 @@ const App = () => {
 
   const fetchPatientData = async () => {
     try {
-      const response = await axios.get('/api/patients');
+      const response = await axios.get('http://localhost:5000/api/patients'); // Added 'http://'
       setPatients(response.data);
     } catch (error) {
       console.error('Error fetching patient data:', error);
@@ -56,7 +56,7 @@ const App = () => {
     }
     
     try {
-      await axios.post('/api/patients', patientData);
+      await axios.post('http://localhost:5000/api/patients', patientData); // Added 'http://'
 
       // Fetch bed data and patient data after successful submission
       fetchBedData();
@@ -117,21 +117,34 @@ const App = () => {
           <button type="submit" disabled={beds <= 0}>Submit</button> {/* Disable if no beds available */}
         </form>
       )}
-
+   
       {/* Display patient data */}
       <div>
-        <h2>Patients List</h2>
-        <ul>
-          {patients.map((patient, index) => (
-            <li key={index}>
-              <strong>Name:</strong> {patient.name} | <strong>Age:</strong> {patient.age} | <strong>Gender:</strong> {patient.gender} | <strong>Condition:</strong> {patient.condition}
-            </li>
-          ))}
-        </ul>
-      </div>
+  <h2>Patients List</h2>
+  <table className="patient-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Age</th>
+        <th>Gender</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      {patients.map((patient, index) => (
+        <tr key={index}>
+          <td>{patient.name}</td>
+          <td>{patient.age}</td>
+          <td>{patient.gender}</td>
+          <td>{patient.condition}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
     </div>
   );
 };
 
-export default App;   
-     
+export default App;
