@@ -1,0 +1,24 @@
+[
+    {
+      "name": "City Hospital",
+      "address": "123 Main Street",
+      "lat": 28.7041,
+      "lng": 77.1025,
+      "contact": "9876543210"
+    },
+    {
+      "name": "Metro Hospital",
+      "address": "456 Metro Road",
+      "lat": 28.5355,
+      "lng": 77.3910,
+      "contact": "8765432109"
+    },
+    {
+      "name": "Apollo Hospital",
+      "address": "789 Apollo Avenue",
+      "lat": 28.4595,
+      "lng": 77.0266,
+      "contact": "7654321098"
+    }
+  ]
+  
