@@ -1,22 +1,26 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./App.css";
-import Bed from "./Bed"; // Ensure this component is properly implemented
-
 
 axios.defaults.baseURL = "http://localhost:5000";
 
 const App = () => {
   const [showForm, setShowForm] = useState(false);
-  const [beds, setBeds] = useState(0);
+  const [beds, setBeds] = useState([]); // Array of beds
+  const [patients, setPatients] = useState([]);
   const [patientData, setPatientData] = useState({
+    date: "",
     name: "",
     age: "",
     gender: "",
-    condition: "",
+    bloodGroup: "",
+    phoneNo: "",
+    address: "",
   });
-  const [patients, setPatients] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedBedType, setSelectedBedType] = useState("");
+  const [bedsAvailable, setBedsAvailable] = useState(0);
+  const [bedCountInput, setBedCountInput] = useState("");
 
   useEffect(() => {
     fetchBedData();
@@ -26,13 +30,9 @@ const App = () => {
   const fetchBedData = async () => {
     try {
       const response = await axios.get("/api/beds");
-      const bedsAvailable = response.data?.bedsAvailable ?? 0;
-      setBeds(bedsAvailable);
-      localStorage.setItem("beds", bedsAvailable);
+      setBeds(response.data);
     } catch (error) {
       console.error("Error fetching bed data:", error);
-      setBeds(0);
-      localStorage.setItem("beds", 0);
     }
   };
 
@@ -45,36 +45,39 @@ const App = () => {
     }
   };
 
-  const handleAddPatientClick = () => {
-    setShowForm(true);
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setPatientData((prevData) => ({ ...prevData, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (beds <= 0) {
-      alert("No beds available!");
+    if (bedsAvailable <= 0) {
+      alert("No beds available for the selected type!");
       return;
     }
 
-    const currentDate = new Date().toISOString().slice(0, 10);
     const generatedPatientId = Math.floor(100000 + Math.random() * 900000).toString();
-
     const dataToSubmit = {
       ...patientData,
-      date: currentDate,
       patientId: generatedPatientId,
+      bedType: selectedBedType,
     };
 
     try {
       await axios.post("/api/patients", dataToSubmit);
+      await updateBedAvailability(selectedBedType, bedsAvailable - 1);
       fetchBedData();
       fetchPatientData();
       setShowForm(false);
       setPatientData({
+        date: "",
         name: "",
         age: "",
         gender: "",
-        condition: "",
+        bloodGroup: "",
+        phoneNo: "",
+        address: "",
       });
       alert("Patient added successfully and bed booked!");
     } catch (error) {
@@ -83,25 +86,55 @@ const App = () => {
     }
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setPatientData((prevData) => ({ ...prevData, [name]: value }));
+  const updateBedAvailability = async (bedType, newCount) => {
+    try {
+      await axios.put("/api/beds/update", {
+        bedType,
+        bedsAvailable: newCount,
+      });
+    } catch (error) {
+      console.error("Error updating bed availability:", error);
+    }
   };
 
-  const handleCheckout = async (patientId) => {
+  const handleCheckout = async (patientId, bedType) => {
     try {
       await axios.post(`/api/patients/checkout/${patientId}`);
+      await updateBedAvailability(bedType, bedsAvailable + 1);
       fetchBedData();
       fetchPatientData();
-      alert('Patient checked out successfully.');
+      alert("Patient checked out successfully.");
     } catch (error) {
-      console.error('Error checking out patient:', error);
-      alert('Failed to checkout patient. Please try again.');
+      console.error("Error checking out patient:", error);
+      alert("Failed to checkout patient. Please try again.");
     }
   };
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
+  };
+
+  const handleBedTypeChange = (e) => {
+    setSelectedBedType(e.target.value);
+    const selectedBed = beds.find((b) => b.bedType === e.target.value);
+    if (selectedBed) {
+      setBedsAvailable(selectedBed.bedsAvailable);
+    }
+  };
+
+  const handleBedCountChange = (e) => {
+    setBedCountInput(e.target.value);
+  };
+
+  const handleUpdateBeds = async () => {
+    if (selectedBedType && bedCountInput) {
+      await updateBedAvailability(selectedBedType, bedCountInput);
+      alert("Bed availability updated successfully");
+      fetchBedData();
+      setBedCountInput("");
+    } else {
+      alert("Please select a bed type and enter the bed count");
+    }
   };
 
   const filteredPatients = patients.filter(
@@ -114,16 +147,47 @@ const App = () => {
     <div className="App">
       <h1>Hospital Bed Management</h1>
 
-      <Bed />
-
       <div>
-        <h2>Beds Available: {beds}</h2>
-        <button onClick={handleAddPatientClick}>Add Patient</button>
-        
+        <h2>Beds Available by Type</h2>
+        <select id="bed-type" value={selectedBedType} onChange={handleBedTypeChange}>
+          <option value="">-- Select Bed Type --</option>
+          {beds.map((bed) => (
+            <option key={bed.bedType} value={bed.bedType}>
+              {bed.bedType}
+            </option>
+          ))}
+        </select>
+        {selectedBedType && <h3>Beds Available for {selectedBedType}: {bedsAvailable}</h3>}
       </div>
 
+      {/* <div>
+        <label htmlFor="bed-count">Enter New Bed Count: </label>
+        <input
+          id="bed-count"
+          type="number"
+          value={bedCountInput}
+          onChange={handleBedCountChange}
+          placeholder="Enter new bed count"
+        />
+        <button onClick={handleUpdateBeds}>Update Beds</button>
+      </div> */}
+
+      <h2>Add New Patient</h2>
+      <button onClick={() => setShowForm(!showForm)}>
+        {showForm ? "Cancel" : "Add Patient"}
+      </button>
       {showForm && (
         <form className="patient-form" onSubmit={handleSubmit}>
+          <label>
+            Date:
+            <input
+              type="date"
+              name="date"
+              value={patientData.date}
+              onChange={handleInputChange}
+              required
+            />
+          </label>
           <label>
             Name:
             <input
@@ -158,16 +222,38 @@ const App = () => {
             </select>
           </label>
           <label>
-            Condition:
+            Blood Group:
             <input
               type="text"
-              name="condition"
-              value={patientData.condition}
+              name="bloodGroup"
+              value={patientData.bloodGroup}
               onChange={handleInputChange}
               required
             />
           </label>
-          <button type="submit" disabled={beds <= 0}>
+          <label>
+            Phone Number:
+            <input
+              type="text"
+              name="phoneNo"
+              value={patientData.phoneNo}
+              onChange={handleInputChange}
+              required
+            />
+          </label>
+          <label>
+            Address:
+            <textarea
+              name="address"
+              value={patientData.address}
+              onChange={handleInputChange}
+              rows="4"
+              cols="50"
+              required
+            />
+          </label>
+          <p className="para">Please select a bed type first!</p>
+          <button type="submit" disabled={bedsAvailable <= 0}>
             Submit
           </button>
         </form>
@@ -187,22 +273,32 @@ const App = () => {
         <table className="patient-table">
           <thead>
             <tr>
+              <th>Date</th>
+              <th>Patient ID</th>
               <th>Name</th>
               <th>Age</th>
               <th>Gender</th>
-              <th>Condition</th>
+              <th>Blood Group</th>
+              <th>Phone Number</th>
+              <th>Address</th>
+              <th>Bed Type</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
             {filteredPatients.map((patient) => (
               <tr key={patient.patientId}>
+                <td>{patient.date}</td>
+                <td>{patient.patientId}</td>
                 <td>{patient.name}</td>
                 <td>{patient.age}</td>
                 <td>{patient.gender}</td>
-                <td>{patient.condition}</td>
+                <td>{patient.bloodGroup}</td>
+                <td>{patient.phoneNo}</td>
+                <td>{patient.address}</td>
+                <td>{patient.bedType}</td>
                 <td>
-                  <button onClick={() => handleCheckout(patient._id)}>
+                  <button onClick={() => handleCheckout(patient._id, patient.bedType)}>
                     Checkout
                   </button>
                 </td>
