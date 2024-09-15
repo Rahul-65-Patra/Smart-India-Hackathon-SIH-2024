@@ -6,10 +6,9 @@ axios.defaults.baseURL = "http://localhost:5000";
 
 const App = () => {
   const [showForm, setShowForm] = useState(false);
-  const [beds, setBeds] = useState([]); // Array of beds
+  const [beds, setBeds] = useState([]);
   const [patients, setPatients] = useState([]);
   const [patientData, setPatientData] = useState({
-    date: "",
     name: "",
     age: "",
     gender: "",
@@ -62,16 +61,16 @@ const App = () => {
       ...patientData,
       patientId: generatedPatientId,
       bedType: selectedBedType,
+      date: new Date().toISOString().split('T')[0], // Automatically set the date to current date
     };
 
     try {
       await axios.post("/api/patients", dataToSubmit);
-      await updateBedAvailability(selectedBedType, bedsAvailable - 1);
-      fetchBedData();
+      // Update bed availability directly in state
+      setBedsAvailable((prevCount) => prevCount - 1);
       fetchPatientData();
       setShowForm(false);
       setPatientData({
-        date: "",
         name: "",
         age: "",
         gender: "",
@@ -92,6 +91,12 @@ const App = () => {
         bedType,
         bedsAvailable: newCount,
       });
+      // Update the state to reflect the new bed count
+      setBeds((prevBeds) =>
+        prevBeds.map((bed) =>
+          bed.bedType === bedType ? { ...bed, bedsAvailable: newCount } : bed
+        )
+      );
     } catch (error) {
       console.error("Error updating bed availability:", error);
     }
@@ -100,8 +105,8 @@ const App = () => {
   const handleCheckout = async (patientId, bedType) => {
     try {
       await axios.post(`/api/patients/checkout/${patientId}`);
-      await updateBedAvailability(bedType, bedsAvailable + 1);
-      fetchBedData();
+      // Update bed availability directly in state
+      setBedsAvailable((prevCount) => prevCount + 1);
       fetchPatientData();
       alert("Patient checked out successfully.");
     } catch (error) {
@@ -115,8 +120,9 @@ const App = () => {
   };
 
   const handleBedTypeChange = (e) => {
-    setSelectedBedType(e.target.value);
-    const selectedBed = beds.find((b) => b.bedType === e.target.value);
+    const selectedBedType = e.target.value;
+    setSelectedBedType(selectedBedType);
+    const selectedBed = beds.find((b) => b.bedType === selectedBedType);
     if (selectedBed) {
       setBedsAvailable(selectedBed.bedsAvailable);
     }
@@ -128,9 +134,8 @@ const App = () => {
 
   const handleUpdateBeds = async () => {
     if (selectedBedType && bedCountInput) {
-      await updateBedAvailability(selectedBedType, bedCountInput);
+      await updateBedAvailability(selectedBedType, Number(bedCountInput));
       alert("Bed availability updated successfully");
-      fetchBedData();
       setBedCountInput("");
     } else {
       alert("Please select a bed type and enter the bed count");
@@ -147,7 +152,7 @@ const App = () => {
     <div className="App">
       <h1>Hospital Bed Management</h1>
 
-      <div>
+      <div className="addPatient">
         <h2>Beds Available by Type</h2>
         <select id="bed-type" value={selectedBedType} onChange={handleBedTypeChange}>
           <option value="">-- Select Bed Type --</option>
@@ -160,34 +165,12 @@ const App = () => {
         {selectedBedType && <h3>Beds Available for {selectedBedType}: {bedsAvailable}</h3>}
       </div>
 
-      {/* <div>
-        <label htmlFor="bed-count">Enter New Bed Count: </label>
-        <input
-          id="bed-count"
-          type="number"
-          value={bedCountInput}
-          onChange={handleBedCountChange}
-          placeholder="Enter new bed count"
-        />
-        <button onClick={handleUpdateBeds}>Update Beds</button>
-      </div> */}
-
       <h2>Add New Patient</h2>
       <button onClick={() => setShowForm(!showForm)}>
         {showForm ? "Cancel" : "Add Patient"}
       </button>
       {showForm && (
         <form className="patient-form" onSubmit={handleSubmit}>
-          <label>
-            Date:
-            <input
-              type="date"
-              name="date"
-              value={patientData.date}
-              onChange={handleInputChange}
-              required
-            />
-          </label>
           <label>
             Name:
             <input
@@ -307,6 +290,7 @@ const App = () => {
           </tbody>
         </table>
       </div>
+
     </div>
   );
 };

@@ -1,4 +1,4 @@
-/* General styles */
+
 body {
   font-family: Arial, sans-serif;
   background-color: #f4f4f9;
@@ -14,14 +14,13 @@ h1 {
   color: #007bff;
 }
 
-/* Main container */
+
 .App {
   font-family: 'Arial', sans-serif;
   padding: 20px;
-  text-align: center;
-  max-width: 1200px;
   margin: 0 auto;
 }
+
 
 /* Button styling */
 button {
@@ -38,6 +37,8 @@ button {
 button:hover {
   background-color: #45a049;
 }
+
+
 
 /* Form styling */
 .patient-form {
