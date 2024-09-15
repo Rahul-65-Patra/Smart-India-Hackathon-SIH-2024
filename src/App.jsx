@@ -153,7 +153,6 @@ const App = () => {
       <h1>Hospital Bed Management</h1>
 
       <div className="addPatient">
-        <h2>Beds Available by Type</h2>
         <select id="bed-type" value={selectedBedType} onChange={handleBedTypeChange}>
           <option value="">-- Select Bed Type --</option>
           {beds.map((bed) => (
@@ -162,13 +161,24 @@ const App = () => {
             </option>
           ))}
         </select>
-        {selectedBedType && <h3>Beds Available for {selectedBedType}: {bedsAvailable}</h3>}
-      </div>
-
-      <h2>Add New Patient</h2>
-      <button onClick={() => setShowForm(!showForm)}>
+        
+        <button onClick={() => setShowForm(!showForm)}>
         {showForm ? "Cancel" : "Add Patient"}
       </button>
+      <div>
+        
+      {selectedBedType && <h3>Total {selectedBedType}: {bedsAvailable}</h3>}
+        <input
+          type="text"
+          placeholder="Search by Name or Patient ID..."
+          value={searchTerm}
+          onChange={handleSearchChange}
+        />
+      </div>
+      </div>
+
+      
+      
       {showForm && (
         <form className="patient-form" onSubmit={handleSubmit}>
           <label>
@@ -242,14 +252,7 @@ const App = () => {
         </form>
       )}
 
-      <div>
-        <input
-          type="text"
-          placeholder="Search by Name or Patient ID..."
-          value={searchTerm}
-          onChange={handleSearchChange}
-        />
-      </div>
+      
 
       <div>
         <h2>Patients List</h2>
@@ -289,9 +292,22 @@ const App = () => {
             ))}
           </tbody>
         </table>
+
+        {/* <label>
+          Bed Count:
+          <input
+            type="number"
+            value={bedCountInput}
+            onChange={handleBedCountChange}
+            min="0"
+          />
+        </label>
+        <button onClick={handleUpdateBeds}>Update Beds</button> */}
+    
       </div>
 
     </div>
+    
   );
 };
 

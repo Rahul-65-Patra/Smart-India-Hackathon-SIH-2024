@@ -13,6 +13,12 @@ h1 {
   font-size: 2.5rem;
   color: #007bff;
 }
+h3{
+  margin-top: 20px;
+  position: relative;
+  top:70px;
+  right:760px;
+}
 
 
 .App {
@@ -20,7 +26,12 @@ h1 {
   padding: 20px;
   margin: 0 auto;
 }
-
+.addPatient{
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  margin-bottom: 20px;
+}
 
 /* Button styling */
 button {
@@ -35,12 +46,17 @@ button {
 }
 
 button:hover {
-  background-color: #45a049;
+  background-color:palevioletred;
 }
 
 
 
 /* Form styling */
+h2{
+  text-align: center;
+  margin-top:5rem;
+   letter-spacing: 2px;
+}
 .patient-form {
   display: flex;
   flex-direction: column;
@@ -113,14 +129,6 @@ button:hover {
   cursor: not-allowed;
 }
 
-/* Input and select styling */
-.patient-form label input[type="text"],
-.patient-form label input[type="number"],
-.patient-form label input[type="date"],
-.patient-form label select,
-.patient-form label textarea {
-  font-size: 0.95rem;
-}
 
 /* Responsive design for forms */
 @media (max-width: 768px) {
@@ -136,18 +144,8 @@ button:hover {
   }
 }
 
-/* Bed and patient section styling */
-.container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-}
 
-.container h2 {
-  margin-bottom: 10px;
-}
+
 
 select#bed-type,
 input[type="number"],
@@ -155,8 +153,10 @@ input[type="text"] {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
-  font-size: 16px;
+  font-size: 15px;
   transition: border-color 0.3s ease;
+  width:300px;
+  
 }
 
 select#bed-type:focus,
@@ -192,97 +192,19 @@ input[type="text"]:focus {
   }
 }
 
-/* Bed Availability Section */
-.bed-availability {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
-}
 
-.bed-availability h2 {
-  font-size: 1.8rem;
-  margin-bottom: 20px;
-}
 
-.bed-card {
-  display: inline-block;
-  width: 30%;
-  background-color: #007bff;
-  color: white;
-  text-align: center;
-  padding: 20px;
-  margin: 10px;
-  border-radius: 8px;
-  font-size: 1.5rem;
-}
+
+
 .para{
   color:red;
   font-size:15px
 }
 
-.bed-card .beds-available {
-  font-size: 2rem;
-  font-weight: bold;
-}
 
-/* Add Patient Form Section */
-.add-patient-form {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
 
-.add-patient-form h2 {
-  font-size: 1.8rem;
-  margin-bottom: 20px;
-}
 
-.add-patient-form label {
-  display: block;
-  font-weight: bold;
-  margin-top: 10px;
-}
 
-.add-patient-form input,
-.add-patient-form select {
-  width: 100%;
-  padding: 10px;
-  margin: 5px 0 20px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 1rem;
-}
-
-.add-patient-form button {
-  background-color: #007bff;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  font-size: 1.2rem;
-  cursor: pointer;
-}
-
-.add-patient-form button:hover {
-  background-color: #0056b3;
-}
-
-/* Checkout button */
-.checkout-btn {
-  background-color: #28a745;
-  color: white;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.checkout-btn:hover {
-  background-color: #218838;
-}
 
 /* Table Section */
 table {
@@ -306,13 +228,4 @@ table td {
   background-color: #f4f4f9;
 }
 
-/* Footer */
-.footer {
-  text-align: center;
-  padding: 20px;
-  background-color: #007bff;
-  color: white;
-  position: fixed;
-  width: 100%;
-  bottom: 0;
-}
+

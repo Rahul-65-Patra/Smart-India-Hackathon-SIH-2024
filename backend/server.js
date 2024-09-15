@@ -63,20 +63,19 @@ const checkedOutPatientSchema = new mongoose.Schema({
 
 const CheckedOutPatient = mongoose.model('CheckedOutPatient', checkedOutPatientSchema);
 
-// Initialize bed data with 2000 beds split equally across bed types
+// Initialize bed data with 500 beds split equally across bed types
 const initializeBedData = async () => {
   const bedTypes = [
     'Emergency Bed',
     'General Bed',
     'Mother\'s Bed',
     'Pediatrics Bed',
-    'Maternity/Women\'s Health Bed',
     'Surgery Bed',
     'Orthopaedics Bed',
-    'ICU (Intensive Care Unit) Bed'
+    'ICU Bed'
   ];
 
-  const bedsPerType = Math.floor(2000 / bedTypes.length);
+  const bedsPerType = Math.floor(500 / bedTypes.length);
 
   try {
     await Bed.deleteMany({}); // Clear existing data
@@ -88,7 +87,7 @@ const initializeBedData = async () => {
       });
       await bedData.save();
     }
-    console.log('Bed data initialized with 2000 beds');
+    console.log('Bed data initialized with 500 beds');
   } catch (error) {
     console.error('Error initializing bed data:', error.message);
   }
